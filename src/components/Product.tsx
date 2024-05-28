@@ -69,14 +69,17 @@ export function Product({
           className="absolute right-2 top-2 p-2 group"
         >
           <Image src="/info.svg" height={18} width={18} alt="Details" />
+          {isOpen && (
+            <div
+              ref={refs.setFloating}
+              style={floatingStyles}
+              {...getFloatingProps()}
+              className="text-start [&_p]:text-start bg-black text-white rounded p-4 w-[300px] max-w-[80vw] z-20 [&_hr]:border-none [&_hr]:my-2"
+              dangerouslySetInnerHTML={{ __html: description ?? "" }}
+            />
+          )}
         </div>
-        {isOpen && <div
-          ref={refs.setFloating}
-          style={floatingStyles}
-          {...getFloatingProps()}
-          className="text-start [&_p]:text-start bg-black text-white rounded p-4 w-[300px] max-w-[80vw] z-20 [&_hr]:border-none [&_hr]:my-2"
-          dangerouslySetInnerHTML={{ __html: description ?? "" }}
-        />}
+
         <Image
           className="object-cover w-full h-1/2"
           src={imageUrl ?? ""}
