@@ -1,4 +1,4 @@
-import { FirmhouseOrderedProduct, FirmhouseProduct, FirmhouseSubscribedPlan } from "@firmhouse/firmhouse-sdk";
+import { FirmhouseCart, FirmhouseOrderedProduct, FirmhouseProduct, FirmhouseSubscribedPlan } from "@firmhouse/firmhouse-sdk";
 
 export function formatPriceWithCurrency(
   amountCents: number,
@@ -6,13 +6,14 @@ export function formatPriceWithCurrency(
   locale?: string | null,
   decimalPoints = 2
 ): string {
-  return Intl.NumberFormat(locale ?? undefined, {
+  return Intl.NumberFormat('nl', {
     currency: currency ?? 'EUR',
     style: 'currency',
     maximumFractionDigits: decimalPoints,
     minimumFractionDigits: decimalPoints,
   }).format(amountCents / 100);
 }
+
 
 export function frequencyFromInterval(interval: number | null, intervalUnitOfMeasure: string | null) {
   if (
@@ -26,6 +27,9 @@ export function frequencyFromInterval(interval: number | null, intervalUnitOfMea
   }
   if (interval === 1) {
     // interval units are always plural, so we remove the last character
+    if(intervalUnitOfMeasure === 'MONTHS' && interval === 1) {
+      return ` per maand`
+    }
     return ` / ${intervalUnitOfMeasure.slice(0, -1)}`.toLowerCase();
   }
 
@@ -36,7 +40,6 @@ export function getBillingFrequency(
   orderedProduct: FirmhouseOrderedProduct,
   plan?: FirmhouseSubscribedPlan | null
 ) {
-  console.log(orderedProduct, plan);
   const { interval, intervalUnitOfMeasure, recurring } = orderedProduct;
   if (!recurring) {
     return '';
@@ -60,4 +63,8 @@ export function getBillingFrequencyForProduct(product: FirmhouseProduct, plan?: 
     return frequencyFromInterval(plan.billingCycleInterval, plan.billingCycleIntervalUnit);
   }
   return frequencyFromInterval(product.interval, product.intervalUnitOfMeasure);
+}
+
+export function findOrderedProductWithProductId(cart: FirmhouseCart, productId: string) {
+  return cart.orderedProducts?.find((op) => op.productId === productId);
 }
