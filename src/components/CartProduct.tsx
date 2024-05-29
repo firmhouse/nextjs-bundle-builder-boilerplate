@@ -79,7 +79,7 @@ export async function CartProduct({
             }}
             className="text-sm font-light underline mx-2"
           >
-            <Image src="/trash.svg" width={32} height={32} alt="Remove" />
+            <Image className="min-w-8 min-h-8" src="/trash.svg" width={32} height={32} alt="Remove" />
           </button>
         </div>
       </div>
