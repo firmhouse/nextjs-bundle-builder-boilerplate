@@ -22,7 +22,7 @@ export default async function ProgressIndicator({
           className="flex items-center md:flex-row flex-col justify-center md:justify-normal h-max w-full md:w-max"
         >
           <div
-            className={`p-1 w-8 h-8 border rounded-full text-center font-bold text-sm md:text-base relative md:after:hidden ${
+            className={`w-8 h-8 border rounded-full text-center font-bold text-sm md:text-base relative md:after:hidden flex items-center justify-center ${
               active
                 ? "bg-attentionBlue text-white border-attentionBlue"
                 : visited
@@ -35,7 +35,7 @@ export default async function ProgressIndicator({
             }`}
             
           >
-            {index + 1}
+            <span className="leading-none w-min pb-px">{index + 1}</span>
           </div>
           <div
             className={`md:w-max md:whitespace-nowrap text-center text-xs md:text-sm md:pl-4 ${

@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import defaultTheme  from "tailwindcss/defaultTheme";
 
 const config: Config = {
   content: [
@@ -6,6 +7,10 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
+    fontFamily: {
+      sans: ['--font-centrale-sans', ...defaultTheme.fontFamily.sans]
+    },
+
     extend: {
       fontSize: {
         '2xl': ['24px', '32px'],
