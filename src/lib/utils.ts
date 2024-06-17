@@ -1,4 +1,4 @@
-import { FirmhouseOrderedProduct, FirmhouseProduct, FirmhouseSubscribedPlan } from "@firmhouse/firmhouse-sdk";
+import { FirmhouseCart, FirmhouseOrderedProduct, FirmhouseProduct, FirmhouseSubscribedPlan } from "@firmhouse/firmhouse-sdk";
 
 export function formatPriceWithCurrency(
   amountCents: number,
@@ -36,7 +36,6 @@ export function getBillingFrequency(
   orderedProduct: FirmhouseOrderedProduct,
   plan?: FirmhouseSubscribedPlan | null
 ) {
-  console.log(orderedProduct, plan);
   const { interval, intervalUnitOfMeasure, recurring } = orderedProduct;
   if (!recurring) {
     return '';
@@ -60,4 +59,9 @@ export function getBillingFrequencyForProduct(product: FirmhouseProduct, plan?: 
     return frequencyFromInterval(plan.billingCycleInterval, plan.billingCycleIntervalUnit);
   }
   return frequencyFromInterval(product.interval, product.intervalUnitOfMeasure);
+}
+
+export function findOrderedProductsWithProductIds(cart: FirmhouseCart, productIds: string[]) {
+  const orderedProducts =  cart.orderedProducts?.filter((op) => productIds.includes(op.productId));
+  return Object.fromEntries(orderedProducts?.map((op) => [op.productId, op.id]) ?? []);
 }

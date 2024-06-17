@@ -5,6 +5,7 @@ import { firmhouseClient } from './firmhouse-client';
 import { revalidatePath } from 'next/cache';
 import { FirmhouseCart, SubscriptionStatus } from '@firmhouse/firmhouse-sdk';
 import { redirect } from 'next/navigation';
+import test from 'node:test';
 
 const CART_TOKEN_COOKIE = 'firmhouse:cart';
 
@@ -76,8 +77,7 @@ export async function updateQuantity(id: string, quantity: number) {
   revalidatePath('/');
 }
 
-export async function updatePlan(data: FormData) {
-  const planSlug = data.get('planSlug') as string;
+export async function updatePlan(planSlug: string) {
   await firmhouseClient.carts.updatePlan(
     await getCartToken(),
     planSlug

@@ -1,53 +1,61 @@
-import { FirmhouseCart, FirmhouseProduct } from "@firmhouse/firmhouse-sdk";
+import { FirmhouseCart, FirmhousePlan, FirmhouseProduct } from "@firmhouse/firmhouse-sdk";
+import { productConfig } from "./product-config";
 
-export interface Step {
+interface BaseStep  {
   slug: string;
   title: string;
   description: string;
-  filter: (product: FirmhouseProduct, cart?: FirmhouseCart) => boolean;
   required?: boolean;
 }
 
-export const containsTag = (product: FirmhouseProduct, tag: string): boolean => {
-  const metadata = product.metadata as { tags?: string[] };
-  return !!metadata.tags && metadata.tags.includes(tag)
+export interface ProductStep extends BaseStep {
+  type: 'product';
+  filter?: (product: FirmhouseProduct, cart?: FirmhouseCart) => boolean;
+  allowSingleSelection?: boolean;
 }
 
-export const Steps: Step[] = [
+export interface PlanStep extends BaseStep {
+  type: 'plan';
+  filter?: (plan: FirmhousePlan, cart?: FirmhouseCart) => boolean;
+}
+
+export type Step = ProductStep | PlanStep;
+
+export const steps: Step[] = [
+  {
+    slug: "frequency",
+    title: "Frequency",
+    description: "Choose how often you want to send your box",
+    type: 'plan'
+  },
   {
     slug: "box",
-    title: "Choose your box",
+    title: "Box",
     description: "Start with a box to keep your items",
-    filter: (product) => true,
+    filter: (product) => !!product.sku && productConfig[product.sku]?.type === 'box',
+    required: true,
+    type: 'product',
+    allowSingleSelection: true
+  },
+  {
+    slug: "content",
+    title: "Content",
+    description: "Select the types of items you want to include in your box. A random assortment of items will be included in your box each time.",
+    filter: (product, cart?: FirmhouseCart) => !!product.sku && productConfig[product.sku]?.type === 'random-item',
+    type: 'product',
     required: true
-  },
-  {
-    slug: "gift",
-    title: "Choose your gift",
-    description: "Choose your gift to put in the box",
-    filter: (product, cart?: FirmhouseCart) => {
-      const selectedBox = cart?.orderedProducts?.find((op) => containsTag(op.product, 'box'))?.product
-      const { size } = (selectedBox?.metadata ?? {}) as { size?: string }
-      return containsTag(product, 'gift') && (!size || containsTag(product, size))
-    },
-  },
-  {
-    slug: "ribbon",
-    title: "Choose a ribbon",
-    description: "Choose a ribbon to wrap the box",
-    filter: (product) => containsTag(product, 'ribbon')
-  }
+  } as ProductStep
 ]
 
 export const findActiveStep = (slug?: string): { activeStep: Step, nextStep?: Step, previousStep?: Step } => {
-  const query = slug ?? 'box'
-  const stepIndex = Steps.findIndex(s => s.slug === query);
+  const query = slug ?? steps[0].slug;
+  const stepIndex = steps.findIndex(s => s.slug === query);
   if (stepIndex === -1) {
     throw new Error('Not found');
   }
   return {
-    activeStep: Steps[stepIndex],
-    nextStep: stepIndex <= Steps.length - 1 ? Steps[stepIndex + 1] : undefined,
-    previousStep: stepIndex > 0 ? Steps[stepIndex - 1] : undefined
+    activeStep: steps[stepIndex],
+    nextStep: stepIndex <= steps.length - 1 ? steps[stepIndex + 1] : undefined,
+    previousStep: stepIndex > 0 ? steps[stepIndex - 1] : undefined
   }
 }

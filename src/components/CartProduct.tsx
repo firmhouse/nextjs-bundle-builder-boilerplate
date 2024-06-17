@@ -28,6 +28,7 @@ export async function CartProduct({
     plan,
     product,
   } = orderedProduct;
+  const isFree = (price ?? 0 ) === 0;
   return (
     <div className="flex flex-row items-center my-2">
       <Image
@@ -39,11 +40,11 @@ export async function CartProduct({
       />
       <div className="flex-col justify-between px-2">
         <p className="font-semibold">
-          {title} x {quantity}
+          {title} {!isFree && ` x ${quantity}`}
         </p>
-        {price && plan === null && (
+        {!isFree && plan === null && (
           <p className="text-sm font-light">
-            {formatPriceWithCurrency(price, currency, locale, 0)}
+            {formatPriceWithCurrency(price ?? 0, currency, locale, 0)}
             {frequency}
           </p>
         )}
@@ -51,14 +52,14 @@ export async function CartProduct({
           <p className="text-sm font-light">Included in plan</p>
         )}
         <div className="flex items-center">
-          <QuantityInput
+         {!isFree &&<QuantityInput
             onUpdateQuantity={(quantity) => {
               startTransition(() => {
                 updateQuantity(id, quantity);
               });
             }}
             quantity={quantity ?? 1}
-          />
+          />}
           <button
             onClick={() => {
               startTransition(() => {

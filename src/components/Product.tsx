@@ -1,5 +1,5 @@
 'use client'
-import { formatPriceWithCurrency, frequencyFromInterval, getBillingFrequencyForProduct } from '@/lib/utils';
+import { formatPriceWithCurrency, getBillingFrequencyForProduct } from '@/lib/utils';
 import { FirmhouseProduct, FirmhouseSubscribedPlan } from '@firmhouse/firmhouse-sdk';
 import Image from 'next/image';
 
@@ -9,6 +9,7 @@ export interface ProductProps  {
   currency?: string | null;
   locale?: string | null;
   children?: React.ReactNode;
+  selected?: boolean;
 }
 
 export function Product({
@@ -16,7 +17,8 @@ export function Product({
   locale,
   children,
   product,
-  subscribedPlan
+  subscribedPlan,
+  selected
 }: ProductProps) {
   const {
     title,
@@ -25,7 +27,7 @@ export function Product({
   } = product;
   const frequency = getBillingFrequencyForProduct(product, subscribedPlan);
   return (
-    <div className="p-4 m-2 rounded-2xl bg-white w-full relative">
+    <div className={`p-4 m-2 rounded-2xl w-full relative 'bg-white' ${selected? 'border-2 border-black' : 'border-2 border-transparent'}`}>
       <Image
         className="rounded-2xl w-64 h-48 object-cover"
         src={imageUrl ?? ''}
@@ -36,9 +38,9 @@ export function Product({
       <div className="flex justify-between my-2 px-2 w-full">
         <div>
           <span className="font-medium">{title}</span>
-          {priceCents && (
+          {((priceCents ?? 0) > 0) && (
             <span className="px-2 text-sm font-light">
-              {formatPriceWithCurrency(priceCents, currency, locale)}
+              {formatPriceWithCurrency(priceCents ?? 0, currency, locale)}
               {frequency}
             </span>
           )}

@@ -18,14 +18,15 @@ export default function Cart({ cart, hideCheckout, children }: CartProps) {
     subscribedPlan
   } = cart ?? { orderedProducts: [] };
   const isCheckoutEnabled = (cart?.orderedProducts ?? []).length > 0;
+  const sortedOrderedProducts = orderedProducts?.sort((a, b) => a.id.localeCompare(b.id)) ?? [];
   return (
     <div className="flex h-full w-full align-middle justify-between flex-col p-8">
-      <div className="max-h-auto overflow-y-auto">
+      <div className={`max-h-auto overflow-y-auto`}>
         <h2 className="font-bold text-xl">Cart</h2>
         {orderedProducts?.length === 0 && (
           <p className="text-gray-500 p-4">No products in cart</p>
         )}
-        {orderedProducts?.map((orderedProduct) => (
+        {sortedOrderedProducts.map((orderedProduct) => (
           <CartProduct
             key={orderedProduct.id}
             orderedProduct={orderedProduct}
@@ -36,7 +37,7 @@ export default function Cart({ cart, hideCheckout, children }: CartProps) {
         ))}
       </div>
       {isCheckoutEnabled && (
-        <div className="">
+        <div className="mt-auto">
           <div className="flex flex-row justify-between border-t-gray-100 border-t my-4 pt-8">
             <p className="font-semibold">Subtotal (pay now)</p>
             <p className="font-light">
